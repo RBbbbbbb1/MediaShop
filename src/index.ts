@@ -1,28 +1,22 @@
-import * as dotenv from "dotenv";
-import "reflect-metadata";
-import express, { Request, Response } from "express";
-import cors from "cors";
-import helmet from "helmet";
+import express from "express";
 import { initialDatabase } from "./instances/data-source";
-import { router as appRouter } from "./routers/app-router";
-
-dotenv.config();
-
-if (!process.env.PORT) {
-  process.exit(1);
-}
-
-const PORT: number = parseInt(process.env.PORT as string, 10);
+import sanPhamRouter from "./routers/SanPham.router";
+import thongTinRouter from "./routers/ThongTin.router";
 
 const app = express();
+const port = 3306;
 
+// Kết nối cơ sở dữ liệu và khởi tạo các bảng và dữ liệu mẫu (nếu cần)
 initialDatabase();
 
-app.use(helmet());
-app.use(cors());
+// Cấu hình cho phép nhận dữ liệu dạng JSON
 app.use(express.json());
-app.use("/api", appRouter); // Update the base path if needed
 
-app.listen(PORT, () => {
-  console.log(`Listening on port ${PORT}`);
+// Kết nối router
+app.use("/sanpham", sanPhamRouter);
+app.use("/thongtin", thongTinRouter);
+
+// Khởi chạy server
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });

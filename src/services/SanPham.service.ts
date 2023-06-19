@@ -1,17 +1,22 @@
+import { getConnection } from "typeorm";
 import { SanPham } from "../entities/SanPham.entity";
-import { getRepository } from "typeorm";
+import { Connection } from "typeorm";
 
-const sanPhamRepository = getRepository(SanPham);
+export class SanPhamService {
+  async addSanPham(TenSP: string, GiaBan: number, Mota: string) {
+    const connection: Connection = getConnection();
+    const query = `
+      INSERT INTO SanPham (TenSP, GiaBan, Mota)
+      VALUES (?, ?, ?)
+    `;
+    const values = [TenSP, GiaBan, Mota];
 
-export async function addSanPham(sanPhamData: Omit<SanPham, "MaSP">): Promise<SanPham> {
-  const sanPham = new SanPham();
-  Object.assign(sanPham, sanPhamData);
-  const newSanPham = await sanPhamRepository.save(sanPham);
-  return newSanPham;
+    try {
+      const result = await connection.query(query, values);
+      const insertedId = result.insertId;
+      return insertedId;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
-
-
-export const getSanPhamById = async (id: string): Promise<SanPham | null> => {
-  const sanPhamRepository = getRepository(SanPham);
-  return await sanPhamRepository.findByIds([id]).then((sanPhams) => sanPhams[0] || null);
-};

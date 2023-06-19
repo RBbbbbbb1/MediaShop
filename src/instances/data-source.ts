@@ -1,20 +1,26 @@
 import { createConnection } from "typeorm";
+import * as dotenv from "dotenv";
 
-export const initialDatabase = async () => {
+dotenv.config();
+
+export async function initialDatabase(): Promise<void> {
   try {
-    await createConnection({
+    const connection = await createConnection({
       type: "mysql",
-      host: "localhost",
+      host: "127.0.0.1",
       port: 3306,
-      username: "your_mysql_username",
-      password: "your_mysql_password",
+      username: "",
+      password: "",
       database: "mediashop",
-      entities: ["src/entities/*.ts"],
+      entities: [__dirname + "/../entities/*.ts"], // Đường dẫn đến thư mục chứa các file entity
+      logging: true,
       synchronize: true,
     });
 
-    console.log("Database connection established");
+    console.log("Data source has been initialized!");
+
+    await connection.close();
   } catch (error) {
-    console.error("Error connecting to the database: ", error);
+    console.log("Error during data source initialization:", error);
   }
-};
+}
